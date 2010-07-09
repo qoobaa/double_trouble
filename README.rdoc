@@ -1,10 +1,56 @@
 = Double Trouble
 
-Adds nonces to your Rails' forms.
+Adds nonces to your Rails' forms, avoiding duplicates by sending the
+same form again (when the user has ADHD, as well in the other
+situations).
 
 == Installation
 
-  gem install form_nonce
+  gem install double_trouble
+
+== Usage
+
+  class CommentsController < ApplicationController
+    protect_from_double_trouble :comment, :only => :create
+
+    def create
+      @comment = Comment.new(params[:comment])
+      if @comment.save
+        # ordinary stuff
+      end
+    end
+  end
+
+Double trouble works quite similar to CSRF protection
+(authenticity_token) - it adds form_nonce parameter to your
+forms. After the protected model is successfully saved (when
+new_record? returns false), it stores received form_nonce in the
+Rails.cache by default (you can easily replace the default store by DB
+backend for instance).
+
+== Configuration
+
+You can globally turn the protection off (test environment?):
+
+  ActionController::Base.allow_double_trouble_protection = false
+
+Default nonce store can be changed:
+
+  ActionController::Base.double_trouble_nonce_store = FormNonce
+
+FormNonce class must implement two class methods:
+
+  def self.valid?(nonce)
+    # checks if the nonce has not been used before
+  end
+
+  def self.store!(nonce)
+    # stores the given nonce somewhere
+  end
+
+The name of the form nonce param can be changed as well:
+
+  ActionController::Base.double_trouble_nonce_param = :double_trouble_nonce
 
 == Copyright
 
