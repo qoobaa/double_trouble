@@ -1,0 +1,11 @@
+= Double Trouble
+
+Adds nonces to your Rails' forms.
+
+== Installation
+
+  gem install form_nonce
+
+== Copyright
+
+Copyright (c) 2010 Jakub Kuźma. See LICENSE[http://github.com/qoobaa/form_nonce/raw/master/LICENSE] for details.
