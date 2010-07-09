@@ -4,7 +4,7 @@ module DoubleTrouble
       base.class_eval do
         class_inheritable_accessor :allow_double_trouble_protection
         class_inheritable_accessor :double_trouble_resource_name
-        cattr_accessor             :double_trouble_nonce_storage
+        cattr_accessor             :double_trouble_nonce_store
         cattr_accessor             :double_trouble_nonce_param
         helper_method              :protect_against_double_trouble?, :double_trouble_nonce_param, :double_trouble_form_nonce
 
@@ -17,7 +17,7 @@ module DoubleTrouble
       def protect_from_double_trouble(resource_name, options = {})
         self.double_trouble_resource_name   = resource_name
         self.double_trouble_nonce_param   ||= :form_nonce
-        self.double_trouble_nonce_storage ||= CachedNonce
+        self.double_trouble_nonce_store   ||= CachedNonce
 
         around_filter :double_trouble_protection, options.slice(:only, :except)
       end
@@ -28,12 +28,13 @@ module DoubleTrouble
     def double_trouble_protection
       if protect_against_double_trouble?
         nonce    = params[double_trouble_nonce_param]
-        resource = instance_variable_get("@#{double_trouble_resource_name}")
-        storage  = double_trouble_nonce_storage
+        store    = double_trouble_nonce_store
 
-        storage.valid?(nonce) || raise(InvalidNonce)
+        store.valid?(nonce) || raise(InvalidNonce)
         yield
-        resource.present? && !resource.new_record? && storage.store!(nonce)
+        instance_variable_get("@#{double_trouble_resource_name}").tap do |resource|
+          resource.present? && !resource.new_record? && store.store!(nonce)
+        end
       else
         yield
       end
@@ -46,7 +47,7 @@ module DoubleTrouble
     def protect_against_double_trouble?
       allow_double_trouble_protection &&
         double_trouble_resource_name &&
-        double_trouble_nonce_storage &&
+        double_trouble_nonce_store &&
         double_trouble_nonce_param
     end
   end

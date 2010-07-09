@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency "rails", "=2.3.8"
   s.add_development_dependency "test-unit", ">= 2.0"
+  s.add_development_dependency "mocha"
 
   s.files = Dir.glob("{lib}/**/*") + %w(LICENSE README.rdoc)
 end

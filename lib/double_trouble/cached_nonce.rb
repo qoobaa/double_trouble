@@ -18,7 +18,7 @@ module DoubleTrouble
     end
 
     def save
-      valid? && Rails.cache.write(cache_key, true, :expires_in => self.class.expires_in)
+      valid? && ::Rails.cache.write(cache_key, true, :expires_in => self.class.expires_in)
     end
 
     def save!
@@ -26,7 +26,7 @@ module DoubleTrouble
     end
 
     def valid?
-      nonce.present? && !Rails.cache.exist?(cache_key, :expires_in => self.class.expires_in)
+      nonce.present? && !::Rails.cache.exist?(cache_key, :expires_in => self.class.expires_in)
     end
 
     def cache_key

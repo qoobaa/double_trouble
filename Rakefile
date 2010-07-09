@@ -5,7 +5,7 @@ require "rubygems/specification"
 require "rake/testtask"
 require "rake/rdoctask"
 require "rake/gempackagetask"
-require "double_trouble"
+require "double_trouble/version"
 
 def gemspec
   file = File.expand_path('../double_trouble.gemspec', __FILE__)
@@ -22,7 +22,7 @@ Rake::RDocTask.new do |rdoc|
   rdoc.rdoc_dir = "rdoc"
   rdoc.title = "double_trouble #{DoubleTrouble::VERSION}"
   rdoc.rdoc_files.include("README.rdoc")
-  rdoc.rdoc_files.include("lib/**/*.rb")
+  rdoc.rdoc_files.include("lib/**/*_test.rb")
 end
 
 Rake::GemPackageTask.new(gemspec) do |pkg|
