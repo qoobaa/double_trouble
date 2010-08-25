@@ -1,4 +1,4 @@
-# HAX: monkey patching is required to make it work
+# HAX AHEAD: monkey patching is required to make it work
 
 module ActionView::Helpers::FormTagHelper
   private

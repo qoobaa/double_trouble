@@ -1,11 +1,5 @@
-require "active_support"
-require "action_pack"
-require "action_controller"
-require "action_controller/base"
-require "action_view"
-require "action_view/helpers/form_tag_helper"
-require "active_support/cache"
-require "active_support/concern"
+require "rails/all"
+require "active_support/all"
 
 require "double_trouble/errors"
 require "double_trouble/cached_nonce"

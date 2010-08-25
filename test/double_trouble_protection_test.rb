@@ -17,9 +17,14 @@ class TestStore
   end
 end
 
+module DoubleTroubleApp
+  class Application < Rails::Application
+  end
+end
 
-# ROUTES
-ActionController::Routing::Routes.draw { |map| map.connect ":controller/:action/:id" }
+DoubleTroubleApp::Application.routes.draw do
+  match "/:controller(/:action(/:id))"
+end
 
 # MODEL
 class MyModel
@@ -30,6 +35,10 @@ end
 # CONTROLLER
 class MyController < ActionController::Base
   protect_from_double_trouble :my_model, :only => :create
+
+  def self._routes
+    DoubleTroubleApp::Application.routes
+  end
 
   def new
     render :inline => "<%= form_tag('/') {} %>"
@@ -55,33 +64,38 @@ class MyController < ActionController::Base
 end
 
 class DoubleTroubleProtectionTest < ActionController::TestCase
+
+  self.controller_class = MyController
+
   def setup
-    @controller = MyController.new
     @nonce      = "not_really_unique_token"
     @store      = TestStore.new
+
+    @routes = DoubleTroubleApp::Application.routes
+
     ActiveSupport::SecureRandom.stubs(:base64).returns(@nonce)
     ActionController::Base.double_trouble_nonce_param = :my_nonce
     ActionController::Base.double_trouble_nonce_store = @store
   end
 
-  test "render form with form nonce in 'new' action" do
+  def test_render_form_with_form_nonce_in_new_action
     get :new
     assert_select "form>div>input[name=?][value=?]", "my_nonce", @nonce
   end
 
-  test "render form with form nonce in 'edit' action" do
+  def test_render_form_with_form_nonce_in_edit_action
     get :edit
     assert_select "form>div>input[name=?][value=?]", "my_nonce", @nonce
   end
 
-  test "not allow to send the create form with the same nonce twice, if model was successfully saved" do
+  def test_not_allow_to_send_the_create_form_with_the_same_nonce_twice_if_model_was_successfully_saved
     post :create, :new_record => false, :my_nonce => @nonce
     assert_response :ok
     assert_false @store.valid?(@nonce)
     assert_raise(DoubleTrouble::InvalidNonce) { post :create, :my_nonce => @nonce }
   end
 
-  test "allow to send the create form with different nonce twice, even if model was successfully saved" do
+  def test_allow_to_send_the_create_form_with_different_nonce_twice_even_if_model_was_successfully_saved
     post :create, :new_record => false, :my_nonce => @nonce
     assert_response :ok
     assert_false @store.valid?(@nonce)
@@ -90,7 +104,7 @@ class DoubleTroubleProtectionTest < ActionController::TestCase
     assert_false @store.valid?(@nonce + "2")
   end
 
-  test "allow to send the create form with the same nonce twice, if model was not saved" do
+  def test_allow_to_send_the_create_form_with_the_same_nonce_twice_if_model_was_not_saved
     post :create, :new_record => true, :my_nonce => @nonce
     assert_response :ok
     assert_true @store.valid?(@nonce)
@@ -98,7 +112,7 @@ class DoubleTroubleProtectionTest < ActionController::TestCase
     assert_response :ok
   end
 
-  test "allow to send the update form with the same nonce twice" do
+  def test_allow_to_send_the_update_form_with_the_same_nonce_twice
     post :update, :new_record => false, :my_nonce => @nonce
     assert_response :ok
     assert @store.valid?(@nonce)

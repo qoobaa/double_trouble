@@ -11,20 +11,20 @@ class DoubleTroubleCachedNonceTest < Test::Unit::TestCase
     Rails.cache.clear
   end
 
-  test "non-existing nonce is valid" do
+  def test_non_existing_nonce_is_valid
     assert DoubleTrouble::CachedNonce.valid?("non-existing nonce")
   end
 
-  test "existing nonce is not valid" do
+  def test_existing_nonce_is_not_valid
     Rails.cache.write("double_trouble_cached_nonce.existing nonce", true)
     assert_false DoubleTrouble::CachedNonce.valid?("existing nonce")
   end
 
-  test "raises error when saving nil" do
+  def test_raises_error_when_saving_nil
     assert_raise(DoubleTrouble::InvalidNonce) { DoubleTrouble::CachedNonce.store!(nil) }
   end
 
-  test "raises error when saving existing nonce" do
+  def test_raises_error_when_saving_existing_nonce
     Rails.cache.write("double_trouble_cached_nonce.existing nonce", true)
     assert_raise(DoubleTrouble::InvalidNonce) { DoubleTrouble::CachedNonce.store!("existing nonce") }
   end
