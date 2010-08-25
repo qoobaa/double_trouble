@@ -5,6 +5,7 @@ require "action_controller/base"
 require "action_view"
 require "action_view/helpers/form_tag_helper"
 require "active_support/cache"
+require "active_support/concern"
 
 require "double_trouble/errors"
 require "double_trouble/cached_nonce"

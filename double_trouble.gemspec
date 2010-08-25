@@ -17,8 +17,8 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = ">= 1.3.7"
 
-  s.add_dependency "rails", "=2.3.8"
-  s.add_development_dependency "test-unit", ">= 2.0"
+  s.add_dependency "rails", "~> 3.0"
+  s.add_development_dependency "test-unit", "~> 2.0"
   s.add_development_dependency "mocha"
 
   s.files = Dir.glob("{lib}/**/*") + %w(LICENSE README.rdoc)
