@@ -13,8 +13,8 @@ module DoubleTrouble
 
     module ClassMethods
       def protect_from_double_trouble(resource_name, options = {})
-        self.double_trouble_nonce_param   ||= :form_nonce
-        self.double_trouble_nonce_store   ||= CachedNonce
+        self.double_trouble_nonce_param ||= :form_nonce
+        self.double_trouble_nonce_store ||= CachedNonce
 
         around_filter(options.slice(:only, :except)) do |controller, action_block|
           if controller.send(:protect_against_double_trouble?)
@@ -32,17 +32,16 @@ module DoubleTrouble
           end
         end
       end
+    end
 
-      module InstanceMethods
-        protected
+    module InstanceMethods
+      protected
+      def double_trouble_form_nonce
+        ActiveSupport::SecureRandom.base64(32)
+      end
 
-        def double_trouble_form_nonce
-          ActiveSupport::SecureRandom.base64(32)
-        end
-
-        def protect_against_double_trouble?
-          allow_double_trouble_protection && double_trouble_nonce_store && double_trouble_nonce_param
-        end
+      def protect_against_double_trouble?
+        allow_double_trouble_protection && double_trouble_nonce_store && double_trouble_nonce_param
       end
     end
   end
